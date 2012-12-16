@@ -13,43 +13,96 @@ Tile = Backbone.Model.extend(
       position_y: y
 
 
-  place_player: (color, feature_index) ->
+  place_player: (color, index) ->
     @set
-      player_on: feature_index
+      player_on: index
       player_color: color
 
+  feature: (index) ->
+    @get("features")[index]
 
-  feature_end: (feature_index) ->
-    that = this
-    feature_end = true
-    feature = @get("features")[feature_index]
-    side = @feature_side(feature_index)
-    if feature is Constants.features.city
-      if side is "north"
-        _.each _.union(Tile.east(), Tile.west()), (test_index) ->
-          feature_end = false  if feature is that.get("features")[test_index]
+  feature_continues: (index, direction = null) ->
+    feature_continues = false
+    feature = @feature(index)
+    if @feature_is_side(index)
+      opposite = @opposite_feature(index)
+      center_same = feature == @center_feature()
+      feature_continues = center_same && feature == opposite
+      feature_continues or= _.include(@neighboring_features(index), feature)
+      feature_continues or= _.include(@adjacent_features(index), feature) && center_same
 
-    feature_end
+      # check for fields surrounding roads
+      if feature is Constants.features.road
+        neighboring_field = @neighboring_feature(index, direction) is Constants.features.field
+        adjacent_field = @adjacent_feature(direction) is Constants.features.field
+        opposite_neighboring_field = @neighboring_feature(@opposite_feature_index(index), direction) is Constants.features.field
+        feature_continues or= neighboring_field && adjacent_field && opposite_neighboring_field
 
-  feature_side: (feature_index) ->
-    side = "center"
-    side = (if _.include(Tile.north(), feature_index) then "north" else side)
-    side = (if _.include(Tile.east(), feature_index) then "east" else side)
-    side = (if _.include(Tile.west(), feature_index) then "south" else side)
-    side = (if _.include(Tile.south(), feature_index) then "west" else side)
-    side
+        adjacent_city = @adjacent_feature(direction) is Constants.features.city
+        feature_continues or= adjacent_city && opposite isnt Constants.features.city
+
+    feature_continues
+
+  feature_is_side: (index) ->
+    _.include [1,3,5,7], index
+
+  feature_is_corner: (index) ->
+    _.include [0,2,4,6], index
+
+  center_feature: ->
+    @feature(8)
+
+  neighboring_features: (index) ->
+    @_get_surrounding_features(index, 1)
+
+  neighboring_feature: (index, direction) ->
+    location = switch direction
+      when "north"
+        if (index==3)
+          2
+        else
+          0
+      when "east"
+        if (index==1)
+          2
+        else
+          4
+      when "south"
+        if (index==3)
+          4
+        else
+          6
+      when "west"
+        if (index==1)
+          0
+        else
+          6
+    @feature(location)
+
+  adjacent_features: (index) ->
+    @_get_surrounding_features(index, 2)
+
+  adjacent_feature: (direction) ->
+    location = switch direction
+      when "north" then location = 1
+      when "east"  then location = 3
+      when "south" then location = 5
+      when "west"  then location = 7
+    @feature(location)
+
+  opposite_feature: (index) ->
+    @feature @opposite_feature_index(index)
+
+  opposite_feature_index: (index) ->
+    @_normalize_feature_index(index + 4)
+
+  _get_surrounding_features: (index, distance) ->
+    left_index = @_normalize_feature_index(index - distance)
+    right_index = @_normalize_feature_index(index + distance)
+    [@feature(left_index), @feature(right_index)]
+
+  _normalize_feature_index: (index) ->
+    index = index - 8 if index > 7
+    index = 8 + index if index < 0
+    index
 )
-Tile.north = ->
-  [0, 1, 2]
-
-Tile.east = ->
-  [3, 4, 5]
-
-Tile.south = ->
-  [6, 7, 8]
-
-Tile.west = ->
-  [9, 10, 11]
-
-Tile.center = ->
-  [12]

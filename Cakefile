@@ -26,8 +26,8 @@ coffeeSpecOpts= "-b -j #{specName}.js -o #{specTargetDir} -c #{targetSpecCoffee}
 projectFiles  = [
   "app",
   "constants",
-  "tile",
-  "tile_types"
+  "tile_types",
+  "tile"
 ]
 
 specFiles    = [
@@ -124,6 +124,7 @@ task 'spec', 'Compile and open Jasmine', ->
         fs.unlink targetSpecCoffee, (err) -> util.log err if err
         finished('js')
 
+      invoke 'build'
       exec "open SpecRunner.html"
 
 

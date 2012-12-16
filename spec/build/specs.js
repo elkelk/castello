@@ -4,69 +4,96 @@ describe("Tile", function() {
   afterEach(function() {
     return $("#main_canvas").clearCanvas();
   });
-  return describe("#feature_end", function() {
-    it("can tell you if a city is connected to an adjacent side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.diagonal_city
+  return describe("#feature_continues", function() {
+    describe("cities", function() {
+      it("can tell you if a city is connected to an adjacent side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.diagonal_city
+        });
+        return expect(tile.feature_continues(1)).toBe(true);
       });
-      return expect(tile.feature_end(0)).toBe(false);
+      it("can tell you if a city is connected to a parallel side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.straight_city
+        });
+        return expect(tile.feature_continues(1)).toBe(true);
+      });
+      return it("can tell you if a city is not connected to another side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.half_city
+        });
+        return expect(tile.feature_continues(1)).toBe(false);
+      });
     });
-    it("can tell you if a city is connected to a parallel side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.straight_city
+    describe("fields", function() {
+      it("can tell you if a field is connected to an adjacent side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.diagonal_city
+        });
+        return expect(tile.feature_continues(1)).toBe(true);
       });
-      return expect(tile.feature_end(0)).toBe(false);
+      it("can tell you if a field is connected to a parallel side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.double_half_city
+        });
+        return expect(tile.feature_continues(3)).toBe(true);
+      });
+      it("can tell you if a field is not connected to another side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.three_sided_city
+        });
+        return expect(tile.feature_continues(5)).toBe(false);
+      });
+      it("can tell you if a field is connected to another side of the tile when the edge is a continuous road", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.starter
+        });
+        return expect(tile.feature_continues(3, "north")).toBe(true);
+      });
+      it("can tell you if a field is connected to another side of the tile when the edge is a road that stops", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.t_road
+        });
+        return expect(tile.feature_continues(1, "west")).toBe(true);
+      });
+      return it("can tell you if a field is connected to another side of the tile when the edge is a road that stops next to a city", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.t_road_ctiy
+        });
+        return expect(tile.feature_continues(1, "west")).toBe(true);
+      });
     });
-    it("can tell you if a city is not connected to another side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.half_city
+    return describe("roads", function() {
+      it("can tell you if a road is connected to an adjacent side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.elbow_road
+        });
+        return expect(tile.feature_continues(1)).toBe(true);
       });
-      return expect(tile.feature_end(0)).toBe(true);
-    });
-    it("can tell you if a field is connected to an adjacent side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.diagonal_city
+      it("can tell you if a road is connected to a parallel side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.straight_road
+        });
+        return expect(tile.feature_continues(1)).toBe(true);
       });
-      return expect(tile.feature_end(0)).toBe(false);
-    });
-    it("can tell you if a field is connected to a parallel side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.double_half_city
+      return it("can tell you if a road is not connected to another side of the tile", function() {
+        var tile;
+        tile = new Tile({
+          features: TileTypes.t_road
+        });
+        return expect(tile.feature_continues(1)).toBe(false);
       });
-      return expect(tile.feature_end(0)).toBe(false);
-    });
-    it("can tell you if a field is not connected to another side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.three_sided_city
-      });
-      return expect(tile.feature_end(0)).toBe(true);
-    });
-    it("can tell you if a road is connected to an adjacent side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.elbow_road
-      });
-      return expect(tile.feature_end(0)).toBe(false);
-    });
-    it("can tell you if a road is connected to a parallel side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.straight_road
-      });
-      return expect(tile.feature_end(0)).toBe(false);
-    });
-    return it("can tell you if a road is not connected to another side of the tile", function() {
-      var tile;
-      tile = new Tile({
-        features: TileTypes.t_road
-      });
-      return expect(tile.feature_end(0)).toBe(true);
     });
   });
 });
