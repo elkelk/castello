@@ -67,11 +67,12 @@ Tile = Backbone.Model.extend({
   },
   draw: function() {
     this.draw_tile();
-    return this.draw_city();
+    this.draw_city();
+    return this.draw_road();
   },
   draw_tile: function() {
     return $(this.get("canvas")).drawRect({
-      fillStyle: "#000",
+      fillStyle: "#336600",
       x: this.get("position_x"),
       y: this.get("position_y"),
       width: 100,
@@ -79,37 +80,74 @@ Tile = Backbone.Model.extend({
       fromCenter: false
     });
   },
-  draw_city_part: function(side) {
-    var end, start, x, y, _ref;
-    _ref = (function() {
-      switch (side) {
-        case 1:
-          return [-Math.PI / 2, Math.PI / 2, 50, 0];
-        case 3:
-          return [0, Math.PI, 100, 50];
-        case 5:
-          return [Math.PI / 2, -Math.PI / 2, 50, 100];
-        case 7:
-          return [Math.PI, 0, 0, 50];
-      }
-    })(), start = _ref[0], end = _ref[1], x = _ref[2], y = _ref[3];
-    return $(this.get("canvas")).drawArc({
-      fillStyle: "brown",
-      x: x + this.get("position_x"),
-      y: y + this.get("position_y"),
-      radius: 50,
-      start: start,
-      end: end,
-      ccw: true,
-      inDegrees: false
-    });
-  },
   draw_city: function() {
-    return _.each([1, 3, 5, 7], function(side) {
-      if (this.feature(side) === Constants.features.city) {
-        return this.draw_city_part(side);
+    return _.each([1, 3, 5, 7, 8], function(feature) {
+      if (this.feature(feature) === Constants.features.city) {
+        return this.draw_city_part(feature);
       }
     }, this);
+  },
+  draw_city_part: function(feature) {
+    var cx1, cx2, cy1, cy2, long, short, x1, x2, y1, y2, _ref;
+    short = 20;
+    long = 100 - short;
+    _ref = (function() {
+      switch (feature) {
+        case 1:
+          return [0, 0, short, 50, long, 50, 100, 0];
+        case 3:
+          return [100, 0, 50, short, 50, long, 100, 100];
+        case 5:
+          return [0, 100, short, 50, long, 50, 100, 100];
+        case 7:
+          return [0, 0, 50, short, 50, long, 0, 100];
+        case 8:
+          return [short, long, short, short - 15, long, short - 15, long, long];
+      }
+    })(), x1 = _ref[0], y1 = _ref[1], cx1 = _ref[2], cy1 = _ref[3], cx2 = _ref[4], cy2 = _ref[5], x2 = _ref[6], y2 = _ref[7];
+    return $(this.get("canvas")).drawBezier({
+      fillStyle: "#663300",
+      x1: x1 + this.get("position_x"),
+      y1: y1 + this.get("position_y"),
+      cx1: cx1 + this.get("position_x"),
+      cy1: cy1 + this.get("position_y"),
+      cx2: cx2 + this.get("position_x"),
+      cy2: cy2 + this.get("position_y"),
+      x2: x2 + this.get("position_x"),
+      y2: y2 + this.get("position_y")
+    });
+  },
+  draw_road: function() {
+    return _.each([1, 3, 5, 7, 8], function(feature) {
+      if (this.feature(feature) === Constants.features.road) {
+        return this.draw_road_part(feature);
+      }
+    }, this);
+  },
+  draw_road_part: function(feature) {
+    var height, width, x, y, _ref;
+    _ref = (function() {
+      switch (feature) {
+        case 1:
+          return [45, 0, 10, 45];
+        case 3:
+          return [55, 45, 45, 10];
+        case 5:
+          return [45, 55, 10, 45];
+        case 7:
+          return [0, 45, 45, 10];
+        case 8:
+          return [45, 45, 10, 10];
+      }
+    })(), x = _ref[0], y = _ref[1], width = _ref[2], height = _ref[3];
+    return $(this.get("canvas")).drawRect({
+      fillStyle: "#fff",
+      x: x + this.get("position_x"),
+      y: y + this.get("position_y"),
+      width: width,
+      height: height,
+      fromCenter: false
+    });
   },
   feature_continues: function(index, direction) {
     var adjacent_city, adjacent_field, center_same, feature, feature_continues, neighboring_field, opposite, opposite_neighboring_field;
