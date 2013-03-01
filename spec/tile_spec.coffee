@@ -41,7 +41,7 @@ describe "Tile", ->
         expect(tile.feature_continues(1, "west")).toBe true
 
       it "can tell you if a field is connected to another side of the tile when the edge is a road that stops next to a city", ->
-        tile = new Tile(features: TileTypes.t_road_ctiy)
+        tile = new Tile(features: TileTypes.t_road_city)
         expect(tile.feature_continues(1, "west")).toBe true
 
     describe "roads", ->

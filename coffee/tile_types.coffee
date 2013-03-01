@@ -14,4 +14,17 @@ TileTypes.three_sided_city = TileTypes.get(["city", "city", "city", "city", "sto
 TileTypes.elbow_road = TileTypes.get(["field", "road", "field", "road", "field", "field", "field", "field", "road"])
 TileTypes.straight_road = TileTypes.get(["field", "road", "field", "field", "field", "road", "field", "field", "road"])
 TileTypes.t_road = TileTypes.get(["field", "road", "field", "road", "field", "road", "field", "field", "stop"])
-TileTypes.t_road_ctiy = TileTypes.get(["stop", "road", "field", "road", "field", "road", "stop", "city", "stop"])
+TileTypes.t_road_city = TileTypes.get(["stop", "road", "field", "road", "field", "road", "stop", "city", "stop"])
+
+TileTypes.all = [
+  TileTypes.starter,
+  TileTypes.diagonal_city,
+  TileTypes.straight_city,
+  TileTypes.half_city,
+  TileTypes.double_half_city,
+  TileTypes.three_sided_city,
+  TileTypes.elbow_road,
+  TileTypes.straight_road,
+  TileTypes.t_road,
+  TileTypes.t_road_city
+]

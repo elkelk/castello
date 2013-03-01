@@ -4,6 +4,7 @@ Tile = Backbone.Model.extend(
     position_x: 0
     position_y: 0
     placed: false
+    canvas: "#main_canvas"
 
   initialize: ->
 
@@ -12,7 +13,6 @@ Tile = Backbone.Model.extend(
       position_x: x
       position_y: y
 
-
   place_player: (color, index) ->
     @set
       player_on: index
@@ -20,6 +20,48 @@ Tile = Backbone.Model.extend(
 
   feature: (index) ->
     @get("features")[index]
+
+  draw: ->
+    @draw_tile()
+    @draw_city()
+
+  draw_tile: ->
+    $(@get("canvas")).drawRect(
+      fillStyle: "#000"
+      x: @get("position_x")
+      y: @get("position_y")
+      width: 100
+      height: 100
+      fromCenter: false
+    )
+
+  draw_city_part: (side) ->
+    [ start, end, x, y ] = switch side
+      when 1
+        [ -Math.PI/2, Math.PI/2, 50, 0 ]
+      when 3
+        [ 0, Math.PI, 100, 50 ]
+      when 5
+        [ Math.PI/2, -Math.PI/2, 50, 100 ]
+      when 7
+        [ Math.PI, 0, 0, 50 ]
+
+    $(@get("canvas")).drawArc(
+        fillStyle: "brown"
+        x: x + @get("position_x")
+        y: y + @get("position_y")
+        radius: 50
+        start: start
+        end: end
+        ccw: true
+        inDegrees: false
+    )
+
+  draw_city: ->
+    _.each [1,3,5,7], (side) ->
+      if @feature(side) is Constants.features.city
+        @draw_city_part side
+    , this
 
   feature_continues: (index, direction = null) ->
     feature_continues = false

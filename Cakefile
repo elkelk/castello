@@ -24,10 +24,10 @@ coffeeOpts    = "-b -j #{targetName}.js -o #{csTargetDir} -c #{targetCoffee}"
 coffeeSpecOpts= "-b -j #{specName}.js -o #{specTargetDir} -c #{targetSpecCoffee}"
 
 projectFiles  = [
-  "app",
   "constants",
   "tile_types",
-  "tile"
+  "tile",
+  "app"
 ]
 
 specFiles    = [
