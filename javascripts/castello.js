@@ -113,13 +113,23 @@ Tile = Backbone.Model.extend({
     });
   },
   draw_city: function() {
-    return _.each([1, 3, 5, 7, 8], function(feature) {
+    _.each([8], function(feature) {
       if (this.feature(feature) === Constants.features.city) {
-        return this.draw_city_part(feature);
+        return this.draw_city_middle(feature, true);
+      }
+    }, this);
+    _.each([1, 3, 5, 7], function(feature) {
+      if (this.feature(feature) === Constants.features.city) {
+        return this.draw_city_side(feature);
+      }
+    }, this);
+    return _.each([0, 2, 4, 6, 8], function(feature) {
+      if (this.feature(feature) === Constants.features.city) {
+        return this.draw_city_middle(feature);
       }
     }, this);
   },
-  draw_city_part: function(feature) {
+  draw_city_side: function(feature) {
     var cx1, cx2, cy1, cy2, long, short, x1, x2, y1, y2, _ref;
     short = 20;
     long = 100 - short;
@@ -133,12 +143,12 @@ Tile = Backbone.Model.extend({
           return [0, 100, short, 50, long, 50, 100, 100];
         case 7:
           return [0, 0, 50, short, 50, long, 0, 100];
-        case 8:
-          return [short, long, short, short - 15, long, short - 15, long, long];
       }
     })(), x1 = _ref[0], y1 = _ref[1], cx1 = _ref[2], cy1 = _ref[3], cx2 = _ref[4], cy2 = _ref[5], x2 = _ref[6], y2 = _ref[7];
     return $(this.get("canvas")).drawBezier({
       fillStyle: "#663300",
+      strokeStyle: "#000",
+      strokeWidth: "5",
       x1: x1 + this.get("position_x"),
       y1: y1 + this.get("position_y"),
       cx1: cx1 + this.get("position_x"),
@@ -147,6 +157,37 @@ Tile = Backbone.Model.extend({
       cy2: cy2 + this.get("position_y"),
       x2: x2 + this.get("position_x"),
       y2: y2 + this.get("position_y")
+    });
+  },
+  draw_city_middle: function(feature, stroke) {
+    var height, size, width, x, y, _ref;
+    if (stroke == null) {
+      stroke = false;
+    }
+    size = 35;
+    _ref = (function() {
+      switch (feature) {
+        case 0:
+          return [0, 0, size, size];
+        case 2:
+          return [100 - size, 0, size, size];
+        case 4:
+          return [100 - size, 100 - size, size, size];
+        case 6:
+          return [0, 100 - size, size, size];
+        case 8:
+          return [30, 30, 40, 40];
+      }
+    })(), x = _ref[0], y = _ref[1], width = _ref[2], height = _ref[3];
+    return $(this.get("canvas")).drawRect({
+      fillStyle: "#663300",
+      x: x + this.get("position_x"),
+      y: y + this.get("position_y"),
+      width: width,
+      height: height,
+      fromCenter: false,
+      strokeStyle: stroke ? "#000" : void 0,
+      strokeWidth: stroke ? "5" : void 0
     });
   },
   draw_road: function() {

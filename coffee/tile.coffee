@@ -37,12 +37,20 @@ Tile = Backbone.Model.extend(
     )
 
   draw_city: ->
-    _.each [ 1, 3, 5, 7, 8 ], (feature) ->
+    _.each [ 8 ], (feature) ->
       if @feature(feature) is Constants.features.city
-        @draw_city_part feature
+        @draw_city_middle feature, true
+    , this
+    _.each [ 1, 3, 5, 7 ], (feature) ->
+      if @feature(feature) is Constants.features.city
+        @draw_city_side feature
+    , this
+    _.each [ 0, 2, 4, 6, 8 ], (feature) ->
+      if @feature(feature) is Constants.features.city
+        @draw_city_middle feature
     , this
 
-  draw_city_part: (feature) ->
+  draw_city_side: (feature) ->
     short = 20
     long = 100 - short
     [ x1, y1, cx1, cy1, cx2, cy2, x2, y2] = switch feature
@@ -54,11 +62,11 @@ Tile = Backbone.Model.extend(
         [ 0, 100, short, 50, long, 50, 100, 100 ]
       when 7
         [ 0, 0, 50, short, 50, long, 0, 100 ]
-      when 8
-        [ short, long, short, short - 15, long, short - 15, long, long ]
 
     $(@get("canvas")).drawBezier(
       fillStyle: "#663300"
+      strokeStyle: "#000"
+      strokeWidth: "5"
       x1: x1 + @get("position_x")
       y1: y1 + @get("position_y")
       cx1: cx1 + @get("position_x")
@@ -67,6 +75,31 @@ Tile = Backbone.Model.extend(
       cy2: cy2 + @get("position_y")
       x2: x2 + @get("position_x")
       y2: y2 + @get("position_y")
+    )
+
+  draw_city_middle: (feature, stroke = false) ->
+    size = 35
+    [ x, y, width, height ] = switch feature
+      when 0
+        [ 0, 0, size, size ]
+      when 2
+        [ 100 - size, 0, size, size ]
+      when 4
+        [ 100 - size, 100 - size, size, size ]
+      when 6
+        [ 0, 100 - size, size, size ]
+      when 8
+        [ 30, 30, 40, 40 ]
+
+    $(@get("canvas")).drawRect(
+      fillStyle: "#663300"
+      x: x + @get("position_x")
+      y: y + @get("position_y")
+      width: width
+      height: height
+      fromCenter: false
+      strokeStyle: "#000" if stroke
+      strokeWidth: "5" if stroke
     )
 
   draw_road: ->
