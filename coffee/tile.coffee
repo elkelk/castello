@@ -1,6 +1,6 @@
 Tile = Backbone.Model.extend(
   defaults:
-    features: TileTypes.starter
+    definition: TileTypes.starter
     position_x: 0
     position_y: 0
     placed: false
@@ -19,7 +19,7 @@ Tile = Backbone.Model.extend(
       player_color: color
 
   feature: (index) ->
-    @get("features")[index]
+    @get("definition").features[index]
 
   draw: ->
     @draw_tile()
